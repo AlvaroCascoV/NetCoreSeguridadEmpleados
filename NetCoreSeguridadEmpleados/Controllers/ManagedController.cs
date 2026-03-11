@@ -1,5 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization.Infrastructure;
+using Microsoft.AspNetCore.Mvc;
+using NetCoreSeguridadEmpleados.Models;
 using NetCoreSeguridadEmpleados.Repositories;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace NetCoreSeguridadEmpleados.Controllers
 {
@@ -16,9 +22,38 @@ namespace NetCoreSeguridadEmpleados.Controllers
             return View();
         }
         [HttpPost]
-        public IActionResult Login(string username, string password)
+        public async Task<IActionResult> Login(string username, string password)
         {
-            return View();
+            int idEmpleado = int.Parse(password);
+            Empleado empleado = await this.repo.LogInEmpleadoAsync(username, idEmpleado);
+            if(empleado != null)
+            {
+                ClaimsIdentity identity = new ClaimsIdentity(
+                    CookieAuthenticationDefaults.AuthenticationScheme,
+                    ClaimTypes.Name, 
+                    ClaimTypes.Role
+                    );
+                Claim claimName = new Claim(ClaimTypes.Name, username);
+                identity.AddClaim(claimName);
+                //COMO POR AHORA NO VOY A UTILIZAR ROLES, NO LO INDICAMOS
+                ClaimsPrincipal userPrincipal = new ClaimsPrincipal(identity);
+                await HttpContext.SignInAsync(
+                    CookieAuthenticationDefaults.AuthenticationScheme,
+                    userPrincipal
+                    );
+                //POR AHORA LO ENVIAMOS A UNA LISTA QUE HAREMOS EN BREVE
+                return RedirectToAction("PerfilEmpleado", "Empleados");
+            }
+            else
+            {
+                ViewData["MENSAJE"] = "Credenciales incorrectas";
+                return View();
+            }
+        }
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return RedirectToAction("Index", "Home");
         }
     }
 }

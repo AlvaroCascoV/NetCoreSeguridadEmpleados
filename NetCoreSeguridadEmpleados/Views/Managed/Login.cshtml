@@ -1,0 +1,13 @@
+﻿<h1>Inicio de sesión</h1>
+
+<form method="post" asp-action="Login">
+    <label>Usuario:</label>
+    <input type="text" class="form-control"name="username" />
+
+    <label>Contraseña:</label>
+    <input type="text" class="form-control" name="password" />
+
+    <button class="btn btn-primary mt-3">Iniciar sesión</button>
+</form>
+
+<h2 style="color:red">@ViewData["MENSAJE"]</h2>
