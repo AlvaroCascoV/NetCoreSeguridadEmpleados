@@ -66,5 +66,10 @@ namespace NetCoreSeguridadEmpleados.Controllers
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Index", "Home");
         }
+
+        public IActionResult ErrorAcceso()
+        {
+            return View();
+        }
     }
 }

@@ -2,6 +2,7 @@
 using NetCoreSeguridadEmpleados.Filters;
 using NetCoreSeguridadEmpleados.Models;
 using NetCoreSeguridadEmpleados.Repositories;
+using System.Security.Claims;
 
 namespace NetCoreSeguridadEmpleados.Controllers
 {
@@ -29,6 +30,15 @@ namespace NetCoreSeguridadEmpleados.Controllers
         {
             
             return View();
+        }
+        [AuthorizeEmpleados]
+        public async Task<IActionResult> Compis()
+        {
+            //RECUPERAMOS EL CLAIM DEL USUARIO VALIDADO
+            string dato = HttpContext.User.FindFirstValue("Departamento");
+            int idDepartamento = int.Parse(dato);
+            List<Empleado> empleados = await this.repo.GetEmpleadosDepartamentoAsync(idDepartamento);
+            return View(empleados);
         }
     }
 }
