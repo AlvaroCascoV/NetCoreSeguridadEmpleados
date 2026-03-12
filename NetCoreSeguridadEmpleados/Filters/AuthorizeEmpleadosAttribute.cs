@@ -1,10 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
 namespace NetCoreSeguridadEmpleados.Filters
 {
-    public class AuthorizeEmpleadosAttribute : Attribute, IAuthorizationFilter
+    public class AuthorizeEmpleadosAttribute :  AuthorizeAttribute, IAuthorizationFilter
     {
         public void OnAuthorization(AuthorizationFilterContext context)
         {
@@ -36,17 +37,19 @@ namespace NetCoreSeguridadEmpleados.Filters
             {
                 context.Result = GetRoute("Managed", "Login");
             }
-            else
-            {
-                //COMPROBAMOS LOS ROLES.
-                //TENEMOS EN CUENTA MAYUSCULAS/MINUSCULAS
-                if(user.IsInRole("PRESIDENTE") == false
-                    && user.IsInRole("DIRECTOR") == false
-                    && user.IsInRole("ANALISTA") == false)
-                {
-                    context.Result = GetRoute("Managed", "ErrorAcceso");
-                }
-            }
+
+
+            //else
+            //{
+            //    //COMPROBAMOS LOS ROLES.
+            //    //TENEMOS EN CUENTA MAYUSCULAS/MINUSCULAS
+            //    if(user.IsInRole("PRESIDENTE") == false
+            //        && user.IsInRole("DIRECTOR") == false
+            //        && user.IsInRole("ANALISTA") == false)
+            //    {
+            //        context.Result = GetRoute("Managed", "ErrorAcceso");
+            //    }
+            //}
         }
         
         //EN ALGUN MOMENTO TENDREMOS MAS REDIRECCIONES QUE SOLO

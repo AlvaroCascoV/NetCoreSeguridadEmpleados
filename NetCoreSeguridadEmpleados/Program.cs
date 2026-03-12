@@ -1,30 +1,50 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
+using NetCoreSeguridadEmpleados.Data;
+using NetCoreSeguridadEmpleados.Policies;
 using NetCoreSeguridadEmpleados.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession();
-builder.Services.AddAuthentication(
-    options =>
-    {
-        options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-        options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-        options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    }).AddCookie();
+builder.Services.AddAuthentication
+    (
+        options =>
+        {
+            options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+        }
+    ).AddCookie
+    (
+        CookieAuthenticationDefaults.AuthenticationScheme,
+        config =>
+        {
+            config.AccessDeniedPath = "/Managed/ErrorAcceso";
+        }
+    );
 
+// Add services to the container.
+
+builder.Services.AddControllersWithViews
+    (options => options.EnableEndpointRouting = false).AddSessionStateTempDataProvider();
+
+//las politicas se agregan con authorization
+builder.Services.AddAuthorization
+    (
+        options =>
+        {
+            //debemos crear las policies que necesitemos para los roles
+            options.AddPolicy("SOLOJEFES", policy => policy.RequireRole("PRESIDENTE", "DIRECTOR", "ANALISTA"));
+            options.AddPolicy("AdminOnly", policy => policy.RequireClaim("Admin"));
+            options.AddPolicy("SoloRicos", policy => policy.Requirements.Add(new OverSalarioRequirement()));
+        }
+    );
+
+string conn = builder.Configuration.GetConnectionString("SQLHospital");
 builder.Services.AddTransient<RepositoryEmpleados>();
-string connectionString = builder.Configuration.GetConnectionString("SQLHospital");
-builder.Services.AddDbContext<NetCoreSeguridadEmpleados.Data.HospitalContext>(options =>
-    options.UseSqlServer(connectionString));
-
-//la option para usar mvc en vez de maproutes y addsessionstateprovider para usar tempdata con sesiones
-builder.Services.AddControllersWithViews(
-    options => options.EnableEndpointRouting = false)
-    .AddSessionStateTempDataProvider();
+builder.Services.AddDbContext<HospitalContext>(options => options.UseSqlServer(conn));
 
 var app = builder.Build();
 
@@ -37,25 +57,25 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-//app.UseRouting();
-//------------added
 app.UseStaticFiles();
+//app.UseRouting();
+
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseSession();
 
-app.UseAuthorization();
-
 //app.MapStaticAssets();
+
 app.UseMvc(routes =>
 {
-    routes.MapRoute(name: "default", template: "{controller=Home}/{action=Index}/{id?}");
+    routes.MapRoute(
+        name: "default",
+        template: "{controller=Home}/{action=Index}/{id?}");
 });
 
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}")
-    .WithStaticAssets();
-
+//app.MapControllerRoute(
+//    name: "default",
+//    pattern: "{controller=Home}/{action=Index}/{id?}")
+//    .WithStaticAssets();
 
 app.Run();

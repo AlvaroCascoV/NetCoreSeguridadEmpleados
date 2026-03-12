@@ -33,6 +33,14 @@ namespace NetCoreSeguridadEmpleados.Controllers
                     ClaimTypes.Name, 
                     ClaimTypes.Role
                     );
+
+                //EMPLEADO ARROYO: 7499 SERA EL ADMIN
+                if(empleado.IdEmpleado == 7499)
+                {
+                    Claim claimAdmin = new Claim("Admin", "Soy el amo de la empresa");
+                    identity.AddClaim(claimAdmin);
+                }
+
                 Claim claimName = new Claim(ClaimTypes.Name, username);
                 identity.AddClaim(claimName);
 

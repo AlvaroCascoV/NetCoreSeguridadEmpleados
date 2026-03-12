@@ -28,10 +28,9 @@ namespace NetCoreSeguridadEmpleados.Controllers
         [AuthorizeEmpleados]
         public async Task<IActionResult> PerfilEmpleado()
         {
-            
             return View();
         }
-        [AuthorizeEmpleados]
+        [AuthorizeEmpleados(Policy = "SOLOJEFES")]
         public async Task<IActionResult> Compis()
         {
             //RECUPERAMOS EL CLAIM DEL USUARIO VALIDADO
@@ -50,6 +49,16 @@ namespace NetCoreSeguridadEmpleados.Controllers
 
             List<Empleado> empleados = await this.repo.GetEmpleadosDepartamentoAsync(idDepartamento);
             return View(empleados);
+        }
+        [AuthorizeEmpleados(Policy = "AdminOnly")]
+        public IActionResult AdminEmpleados()
+        {
+            return View();
+        }
+        [AuthorizeEmpleados(Policy = "SoloRicos")]
+        public IActionResult ZonaNoble()
+        {
+            return View();
         }
     }
 }
