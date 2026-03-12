@@ -68,6 +68,14 @@ app.UseSession();
 
 app.UseMvc(routes =>
 {
+    //si queremos una ruta con otro nombre en el parametro, hay que crear una ruta nueva
+    //la default va siempre al final
+    //routes.MapRoute(
+    //    name: "defaultIdEmpleado",
+    //    template: "{controller=Home}/{action=Index}/{idempleado?}");
+    //routes.MapRoute(
+    //    name: "otraRuta",
+    //    template: "{controller=Home}/{action=Index}/{apellido?}/{oficio?}");
     routes.MapRoute(
         name: "default",
         template: "{controller=Home}/{action=Index}/{id?}");

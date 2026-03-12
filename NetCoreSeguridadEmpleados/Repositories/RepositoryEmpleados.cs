@@ -18,9 +18,9 @@ namespace NetCoreSeguridadEmpleados.Repositories
             return await this.context.Empleados.ToListAsync();
         }
 
-        public async Task<Empleado> FindEmpleadoAsync(int idEmpleado)
+        public async Task<Empleado> FindEmpleadoAsync(int id)
         {
-            return await this.context.Empleados.FirstOrDefaultAsync(x => x.IdEmpleado == idEmpleado);
+            return await this.context.Empleados.FirstOrDefaultAsync(x => x.IdEmpleado == id);
         }
         
         public async Task<List<Empleado>> GetEmpleadosDepartamentoAsync(int idDepartamento)
