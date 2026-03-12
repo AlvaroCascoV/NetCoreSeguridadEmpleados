@@ -53,7 +53,12 @@ namespace NetCoreSeguridadEmpleados.Controllers
                     CookieAuthenticationDefaults.AuthenticationScheme,
                     userPrincipal
                     );
-                return RedirectToAction("PerfilEmpleado", "Empleados");
+
+                //redirigimos a donde quiere el user despues del login
+                string controller = TempData["controller"].ToString();
+                string action = TempData["action"].ToString();
+
+                return RedirectToAction(action, controller);
             }
             else
             {

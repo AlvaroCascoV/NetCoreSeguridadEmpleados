@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
 namespace NetCoreSeguridadEmpleados.Filters
 {
@@ -10,6 +11,27 @@ namespace NetCoreSeguridadEmpleados.Filters
             //POR AHORA, SOLAMENTE NOS INTERESA
             //VALIDAR SI EXISTE O NO EL EMPLEADO
             var user = context.HttpContext.User;
+
+            //queremos que al hacer login, devuelva a la pagina donde quiere acceder, no al perfil siempre
+            //NECESITAMOS EL ACTION Y EL CONTROLLER DE DONDE
+            //EL USUARIO HA PULSADO.
+            //PARA ELLO, TENEMOS RouteValues QUE CONTIENE 
+            //LA INFORMACION
+            //RouteData["contoller"]
+            //RouteData["action"]
+            //RouteData["idalgo"] (si lo hubiera)
+            string controller = context.RouteData.Values["controller"].ToString();
+            string action = context.RouteData.Values["action"].ToString();
+            ITempDataProvider provider = context.HttpContext.RequestServices.GetService<ITempDataProvider>();
+            //ESTA CLASE CONTIENE EL TEMPDATA DE NUESTRA APP
+            var tempData = provider.LoadTempData(context.HttpContext);
+            //ALMACENAMOS LA INFORMACION
+            tempData["controller"] = controller;
+            tempData["action"] = action;
+            //REASIGNAMOS EL TEMPDATA PARA NUESTRA APP
+            provider.SaveTempData(context.HttpContext, tempData);
+
+
             if (user.Identity.IsAuthenticated == false)
             {
                 context.Result = GetRoute("Managed", "Login");

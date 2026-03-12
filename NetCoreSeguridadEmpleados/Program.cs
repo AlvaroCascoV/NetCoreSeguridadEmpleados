@@ -21,8 +21,10 @@ string connectionString = builder.Configuration.GetConnectionString("SQLHospital
 builder.Services.AddDbContext<NetCoreSeguridadEmpleados.Data.HospitalContext>(options =>
     options.UseSqlServer(connectionString));
 
-
-builder.Services.AddControllersWithViews(options => options.EnableEndpointRouting = false);
+//la option para usar mvc en vez de maproutes y addsessionstateprovider para usar tempdata con sesiones
+builder.Services.AddControllersWithViews(
+    options => options.EnableEndpointRouting = false)
+    .AddSessionStateTempDataProvider();
 
 var app = builder.Build();
 

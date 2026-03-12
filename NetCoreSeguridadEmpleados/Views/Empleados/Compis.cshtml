@@ -2,6 +2,15 @@
 
 <h1>Compañeros de trabajo</h1>
 
+@if(Context.User.IsInRole("PRESIDENTE") || Context.User.IsInRole("DIRECTOR"))
+{
+    <form method="post">
+        <label>Incremento salarial: </label>
+        <input type="text" name="incremento" class="form-control" />
+        <button class="btn btn-primary mt-2">Aplicar incremento</button>
+    </form>
+}
+
 <table class="table table-striped">
     <thead>
         <tr>
