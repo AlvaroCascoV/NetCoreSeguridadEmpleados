@@ -3,6 +3,7 @@ using NetCoreSeguridadEmpleados.Filters;
 using NetCoreSeguridadEmpleados.Models;
 using NetCoreSeguridadEmpleados.Repositories;
 using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace NetCoreSeguridadEmpleados.Controllers
 {
@@ -60,6 +61,12 @@ namespace NetCoreSeguridadEmpleados.Controllers
         public IActionResult ZonaNoble()
         {
             return View();
+        }
+        [AuthorizeEmpleados(Policy = "TieneSubordinados")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            await this.repo.DeleteEmpleadoAsync(id);
+            return RedirectToAction("Index");
         }
     }
 }

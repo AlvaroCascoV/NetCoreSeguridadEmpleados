@@ -39,6 +39,7 @@ builder.Services.AddAuthorization
             options.AddPolicy("SOLOJEFES", policy => policy.RequireRole("PRESIDENTE", "DIRECTOR", "ANALISTA"));
             options.AddPolicy("AdminOnly", policy => policy.RequireClaim("Admin"));
             options.AddPolicy("SoloRicos", policy => policy.Requirements.Add(new OverSalarioRequirement()));
+            options.AddPolicy("TieneSubordinados", policy => policy.Requirements.Add(new TieneSubordinadosRequirement()));
         }
     );
 
